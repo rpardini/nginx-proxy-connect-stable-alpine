@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
+LABEL maintainer="Ricardo Pardini <ricardo@pardini.net>"
 
 ENV NGINX_VERSION 1.14.0
 

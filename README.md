@@ -1,12 +1,12 @@
-# nginx:stable-alpine + proxy_connect module
+# nginx:stable-alpine + proxy_connect
 
-Original work at
+Upstreams: 
 - [nginx:stable-alpine](https://github.com/nginxinc/docker-nginx/tree/master/stable/alpine)
 - [ngx_http_proxy_connect_module](https://github.com/chobits/ngx_http_proxy_connect_module)
 
-I removed gpg sig verification and debug version building for the sake of faster builds.
+I removed gpg sig verification for the sake of faster builds.
 
-# Usage
+## Usage
 
 It's on [Docker Hub](https://hub.docker.com/r/rpardini/nginx-proxy-connect-stable-alpine/); `:latest` is from master.
 
@@ -19,7 +19,7 @@ docker run -it -p 8081:80 rpardini/nginx-proxy-connect-stable-alpine
 - you can map on `$connect_host`
 - log `$connect_addr` for host:port of the final destination
 
-# Why?
+## Why?
 
 I wanted a more contained way of doing DNS overrides.
 

@@ -1,10 +1,12 @@
 # nginx:stable-alpine + proxy_connect
 
 Upstreams: 
-- [nginx:stable-alpine](https://github.com/nginxinc/docker-nginx/tree/master/stable/alpine)
+- [nginx:stable-alpine](https://github.com/nginxinc/docker-nginx/tree/master/stable/alpine) (due this has since long diverged)
 - [ngx_http_proxy_connect_module](https://github.com/chobits/ngx_http_proxy_connect_module)
 
 I removed gpg sig verification for the sake of faster builds.
+Also most modules with external dependencies were removed.
+
 
 ## Usage
 

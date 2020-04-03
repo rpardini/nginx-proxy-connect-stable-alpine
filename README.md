@@ -7,10 +7,13 @@ Upstreams:
 I removed gpg sig verification for the sake of faster builds.
 Also most modules with external dependencies were removed.
 
+# master (`:latest`) is actually unstable
+
+For stable versions, use the tagged builds, eg, `nginx-1.16.1-alpine-3.11`
 
 ## Usage
 
-It's on [Docker Hub](https://hub.docker.com/r/rpardini/nginx-proxy-connect-stable-alpine/); `:latest` is from master.
+It's on [Docker Hub](https://hub.docker.com/r/rpardini/nginx-proxy-connect-stable-alpine/); `:latest` is from master and unstable.
 
 ```bash 
 docker run -it -p 8081:80 rpardini/nginx-proxy-connect-stable-alpine

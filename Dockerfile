@@ -1,6 +1,6 @@
-FROM alpine:3.11
+FROM alpine:edge
 
-ENV NGINX_VERSION 1.16.1
+ENV NGINX_VERSION 1.17.9
 
 RUN CONFIG="\
 		--prefix=/etc/nginx \

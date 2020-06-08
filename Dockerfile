@@ -1,6 +1,6 @@
-FROM alpine:edge
+FROM alpine:3.12
 
-ENV NGINX_VERSION 1.17.9
+ENV NGINX_VERSION 1.18.0
 
 RUN CONFIG="\
 		--prefix=/etc/nginx \
@@ -48,6 +48,7 @@ RUN CONFIG="\
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
+		patch \
 		curl \
 		git \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \

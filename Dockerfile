@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:3.12.0
 # If set to 1, enables building debug version of nginx, which is super-useful, but also heavy to build.
 ARG DEBUG_BUILD="1"
 ENV DO_DEBUG_BUILD="$DEBUG_BUILD"

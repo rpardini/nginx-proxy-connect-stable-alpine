@@ -52,9 +52,9 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:latest
-          push: true # is a shorthand for --output=type=registry
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
-          # first run does not export the cache, otherwise arm64 is lost
+          # first run only loads the cache
 
       - name: Build and push amd64 Debug Docker Image to DockerHub
         uses: docker/build-push-action@v2
@@ -65,7 +65,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:latest-debug
-          push: true # is a shorthand for --output=type=registry
+          push: true
           # intermediate step does not touch the cache.
 
       # Do it all again with both archs. the amd64 will be a huge cache hit
@@ -79,7 +79,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64,linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:latest
-          push: true # is a shorthand for --output=type=registry
+          push: true
           # intermediate step does not touch the cache.
 
       - name: Build and push multiarch Debug Docker Image to DockerHub
@@ -91,7 +91,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64,linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:latest-debug
-          push: true # is a shorthand for --output=type=registry
-          #cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/debug
+          push: true
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          # final build exports the cache in max mode
 

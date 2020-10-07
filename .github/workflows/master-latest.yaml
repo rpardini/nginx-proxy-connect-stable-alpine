@@ -52,7 +52,7 @@ jobs:
           tags: rpardini/nginx-proxy-connect-stable-alpine:latest
           push: true # is a shorthand for --output=type=registry
           cache-from: type=local,src=/tmp/.buildx-cache
-          # cache-to: type=local,dest=/tmp/.buildx-cache # first run does not export the cache, otherwise arm64 is lost
+          # first run does not export the cache, otherwise arm64 is lost
 
       # Do it all again with both archs. the amd64 will be a huge cache hit
       # this will update the manifest have both arches

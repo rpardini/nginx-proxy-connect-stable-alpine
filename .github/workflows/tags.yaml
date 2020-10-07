@@ -35,9 +35,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx2-${{ github.sha }}
+          key: ${{ runner.os }}-buildxarch-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx2-
+            ${{ runner.os }}-buildxarch-
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -59,8 +59,8 @@ jobs:
           platforms: linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:${{ steps.get_version.outputs.version }}
           push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache/release
+          # first run does not export the cache
 
       - name: Build and push amd64 Debug Docker Image to DockerHub
         uses: docker/build-push-action@v2
@@ -72,8 +72,8 @@ jobs:
           platforms: linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:${{ steps.get_version.outputs.version }}-debug
           push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache/debug
+          # first run does not export the cache
 
       # Do it all again with both archs. the amd64 will be a huge cache hit
       # this will update the manifest have both arches
@@ -87,8 +87,8 @@ jobs:
           platforms: linux/arm64,linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:${{ steps.get_version.outputs.version }}
           push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache/release
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/release
 
       - name: Build and push multiarch Debug Docker Image to DockerHub
         uses: docker/build-push-action@v2
@@ -100,6 +100,6 @@ jobs:
           platforms: linux/arm64,linux/amd64
           tags: rpardini/nginx-proxy-connect-stable-alpine:${{ steps.get_version.outputs.version }}-debug
           push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache/debug
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache/debug
 

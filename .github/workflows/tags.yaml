@@ -3,6 +3,7 @@ name: tags
 on:
   push:
     tags:
+      - '*'
 
 jobs:
   tags:

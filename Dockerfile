@@ -1,15 +1,16 @@
 FROM alpine:3.12.0
-# If set to 1, enables building debug version of nginx, which is super-useful, but also heavy to build.
-ARG DEBUG_BUILD="1"
-ENV DO_DEBUG_BUILD="$DEBUG_BUILD"
-
-ENV NGINX_VERSION 1.18.0
 
 # apk upgrade in a separate layer (musl is huge)
 RUN apk upgrade --no-cache --update
 
 # Bring in tzdata and runtime libs into their own layer
 RUN apk add --no-cache --update tzdata pcre zlib libssl1.1
+
+# If set to 1, enables building debug version of nginx, which is super-useful, but also heavy to build.
+ARG DEBUG_BUILD="1"
+ENV DO_DEBUG_BUILD="$DEBUG_BUILD"
+
+ENV NGINX_VERSION 1.18.0
 
 # nginx layer
 RUN CONFIG="\

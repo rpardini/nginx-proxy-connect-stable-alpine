@@ -1,4 +1,6 @@
 .idea
 .git
 .gitignore
+.github
+README.md
 *.iml

@@ -1,0 +1,59 @@
+name: tags
+
+on:
+  push:
+    tags:
+
+jobs:
+  tags:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Parse the ref to get the clean tag name.
+      - id: get_version
+        uses: battila7/get-version-action@v2
+      - run: echo Current tag ${{ steps.get_version.outputs.version }}
+
+      # Setup qEMU for arm64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64
+
+      # We use buildx instead of regular build so we can take advantage of Docker layer cache via GithubActions's cache
+      # Also buildx offers multi-arch builds
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Setup the Github Actions cache.
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push Docker Image to DockerHub
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64,linux/amd64
+          tags: rpardini/nginx-proxy-connect-stable-alpine:${{ steps.get_version.outputs.version }}
+          push: true # is a shorthand for --output=type=registry
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+

@@ -71,7 +71,7 @@ RUN CONFIG="\
 	&& [ "a$DO_DEBUG_BUILD" == "a1" ] && { install -m755 objs/nginx-debug /usr/sbin/nginx-debug; } || { echo "Not installing debug..."; } \
 	&& mkdir -p /usr/lib/nginx/modules \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
-	#&& strip /usr/sbin/nginx* \
+	&& strip /usr/sbin/nginx* \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
 	\
 	# Remove -dev apks and sources

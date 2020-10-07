@@ -5,9 +5,10 @@ on:
     branches: [ master ]
 
 jobs:
-  allaround:
+  master-latest:
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -15,7 +16,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         with:
-          platforms: arm64,amd64
+          platforms: arm64
 
       # We use buildx instead of regular build so we can take advantage of Docker layer cache via GithubActions's cache
       # Also buildx offers multi-arch builds
@@ -32,7 +33,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build Docker Image to local daemon only
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push Docker Image to DockerHub
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -40,9 +47,8 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/arm64,linux/amd64
-          tags: rpardini/npcsa:latest
-          load: true # is a shorthand for --output=type=docker
-          push: false # is a shorthand for --output=type=registry
+          tags: rpardini/nginx-proxy-connect-stable-alpine:latest
+          push: true # is a shorthand for --output=type=registry
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 

@@ -9,7 +9,7 @@ Also most modules with external dependencies were removed.
 
 # master (`:latest`) is actually unstable
 
-For stable versions, use the tagged builds, eg, `nginx-1.16.1-alpine-3.11`
+For stable versions, use the tagged builds, eg, `nginx-1.18.0-alpine-3.12.1`
 
 ## Usage
 

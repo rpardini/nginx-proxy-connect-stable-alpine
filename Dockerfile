@@ -1,4 +1,4 @@
-FROM alpine:3.12.1
+FROM alpine:3.12.7
 
 # apk upgrade in a separate layer (musl is huge)
 RUN apk upgrade --no-cache --update
@@ -10,7 +10,7 @@ RUN apk add --no-cache --update tzdata pcre zlib libssl1.1
 ARG DEBUG_BUILD="1"
 ENV DO_DEBUG_BUILD="$DEBUG_BUILD"
 
-ENV NGINX_VERSION 1.18.0
+ENV NGINX_VERSION 1.20.1
 
 # nginx layer
 RUN CONFIG="\

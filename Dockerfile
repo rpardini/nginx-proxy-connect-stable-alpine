@@ -60,7 +60,7 @@ RUN CONFIG="\
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
-	&& patch -p1 < $PROXY_CONNECT_MODULE_PATH/patch/proxy_connect_rewrite_101504.patch \
+	&& patch -p1 < $PROXY_CONNECT_MODULE_PATH/patch/proxy_connect_rewrite_102101.patch \
 	&& [ "a$DO_DEBUG_BUILD" == "a1" ] && { echo "Bulding DEBUG" &&  ./configure $CONFIG --with-debug && make -j$(getconf _NPROCESSORS_ONLN) && mv objs/nginx objs/nginx-debug ; } || { echo "Not building debug"; } \
 	&& { echo "Bulding RELEASE" && ./configure $CONFIG  && make -j$(getconf _NPROCESSORS_ONLN) && make install; } \
 	&& ls -laR objs/addon/ngx_http_proxy_connect_module/ \

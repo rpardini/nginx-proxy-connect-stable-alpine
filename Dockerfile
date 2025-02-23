@@ -1,4 +1,4 @@
-FROM alpine:3.12.7
+FROM alpine:3.21.3
 
 # apk upgrade in a separate layer (musl is huge)
 RUN apk upgrade --no-cache --update

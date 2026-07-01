@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine:3.21.3
+FROM alpine:3.24.1
 
 # apk upgrade in a separate layer (musl is huge)
 RUN apk upgrade --no-cache --update
@@ -53,6 +53,7 @@ CONFIG="\
 	--with-compat \
 	--with-file-aio \
 	--with-http_v2_module \
+	--with-cc-opt=-Wno-error=unterminated-string-initialization \
 "
 
 echo "===== Creating nginx user and group ====="

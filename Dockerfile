@@ -11,7 +11,7 @@ RUN apk add --no-cache --update tzdata pcre zlib libssl3
 ARG DEBUG_BUILD="1"
 ENV DO_DEBUG_BUILD="$DEBUG_BUILD"
 
-ENV NGINX_VERSION=1.26.3
+ENV NGINX_VERSION=1.30.3
 
 # nginx layer
 RUN <<EOF
@@ -53,8 +53,13 @@ CONFIG="\
 	--with-compat \
 	--with-file-aio \
 	--with-http_v2_module \
-	--with-cc-opt=-Wno-error=unterminated-string-initialization \
 "
+
+# GCC 15 (alpine 3.24) promotes several warnings to errors that nginx 1.30.x and the
+# proxy_connect patch trip over; demote just those back to warnings via --with-cc-opt.
+# Kept in its own quoted var (not $CONFIG, which is expanded unquoted) so the space
+# between flags survives word-splitting.
+CC_OPT="-Wno-error=unterminated-string-initialization -Wno-error=unused-but-set-variable"
 
 echo "===== Creating nginx user and group ====="
 addgroup -S nginx
@@ -67,7 +72,12 @@ echo "===== Downloading nginx $NGINX_VERSION source ====="
 curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
 echo "===== Cloning ngx_http_proxy_connect_module ====="
-git clone https://github.com/chobits/ngx_http_proxy_connect_module.git /usr/src/ngx_http_proxy_connect_module
+# yuwenlong fork carries proxy_connect_rewrite_103100.patch (nginx 1.30.x); upstream
+# chobits tops out at 102101 (1.26.x). Pinned to a specific commit rather than tracking
+# the fork's master, so builds are reproducible and immune to upstream force-pushes.
+PROXY_CONNECT_MODULE_COMMIT="06f0a09c51b2468cc39f6feb5cae461f6cfbba96"
+git clone https://github.com/yuwenlong/ngx_http_proxy_connect_module.git /usr/src/ngx_http_proxy_connect_module
+git -C /usr/src/ngx_http_proxy_connect_module checkout "$PROXY_CONNECT_MODULE_COMMIT"
 PROXY_CONNECT_MODULE_PATH="/usr/src/ngx_http_proxy_connect_module"
 CONFIG="$CONFIG --add-module=$PROXY_CONNECT_MODULE_PATH"
 
@@ -78,11 +88,11 @@ rm nginx.tar.gz
 cd /usr/src/nginx-$NGINX_VERSION
 
 echo "===== Patching nginx with proxy_connect module ====="
-patch -p1 < $PROXY_CONNECT_MODULE_PATH/patch/proxy_connect_rewrite_102101.patch
+patch -p1 < $PROXY_CONNECT_MODULE_PATH/patch/proxy_connect_rewrite_103100.patch
 
 if [ "a$DO_DEBUG_BUILD" = "a1" ]; then
 	echo "===== Building DEBUG nginx ====="
-	./configure $CONFIG --with-debug
+	./configure $CONFIG --with-cc-opt="$CC_OPT" --with-debug
 	make -j$(getconf _NPROCESSORS_ONLN)
 	mv objs/nginx objs/nginx-debug
 else
@@ -90,7 +100,7 @@ else
 fi
 
 echo "===== Building RELEASE nginx ====="
-./configure $CONFIG
+./configure $CONFIG --with-cc-opt="$CC_OPT"
 make -j$(getconf _NPROCESSORS_ONLN)
 make install
 

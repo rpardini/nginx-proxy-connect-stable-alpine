@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine:3.24.1
+FROM alpine:3.24.3
 
 # apk upgrade in a separate layer (musl is huge)
 RUN apk upgrade --no-cache --update
@@ -11,7 +11,7 @@ RUN apk add --no-cache --update tzdata pcre zlib libssl3
 ARG DEBUG_BUILD="1"
 ENV DO_DEBUG_BUILD="$DEBUG_BUILD"
 
-ENV NGINX_VERSION=1.30.3
+ENV NGINX_VERSION=1.30.6
 
 # nginx layer
 RUN <<EOF
@@ -59,7 +59,7 @@ CONFIG="\
 # proxy_connect patch trip over; demote just those back to warnings via --with-cc-opt.
 # Kept in its own quoted var (not $CONFIG, which is expanded unquoted) so the space
 # between flags survives word-splitting.
-CC_OPT="-Wno-error=unterminated-string-initialization -Wno-error=unused-but-set-variable"
+CC_OPT="-Wno-error=unterminated-string-initialization -Wno-error=unused-variable"
 
 echo "===== Creating nginx user and group ====="
 addgroup -S nginx
@@ -72,10 +72,10 @@ echo "===== Downloading nginx $NGINX_VERSION source ====="
 curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
 echo "===== Cloning ngx_http_proxy_connect_module ====="
-# yuwenlong fork carries proxy_connect_rewrite_103100.patch (nginx 1.30.x); upstream
+# yuwenlong fork carries proxy_connect_rewrite_103100.patch (nginx 1.30.x/1.31.x); upstream
 # chobits tops out at 102101 (1.26.x). Pinned to a specific commit rather than tracking
 # the fork's master, so builds are reproducible and immune to upstream force-pushes.
-PROXY_CONNECT_MODULE_COMMIT="06f0a09c51b2468cc39f6feb5cae461f6cfbba96"
+PROXY_CONNECT_MODULE_COMMIT="b2a47cc2fd081560de66a520f83f1526bc65270f"
 git clone https://github.com/yuwenlong/ngx_http_proxy_connect_module.git /usr/src/ngx_http_proxy_connect_module
 git -C /usr/src/ngx_http_proxy_connect_module checkout "$PROXY_CONNECT_MODULE_COMMIT"
 PROXY_CONNECT_MODULE_PATH="/usr/src/ngx_http_proxy_connect_module"
